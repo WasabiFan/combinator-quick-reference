@@ -6,9 +6,14 @@
       "lib": ["dom", "esnext"],
       "strict": true,
       "noEmit": true,
+      "noImplicitAny": true,
       "isolatedModules": true,
       "esModuleInterop": true,
-      "noUnusedLocals": false
+      "noUnusedLocals": true
     },
-    "exclude": ["node_modules", "public", ".cache"]
+    "exclude": ["node_modules", "public", ".cache"],
+    "include": [
+        "content/combinators.d.ts",
+        "src/**/*.tsx",
+    ]
   }
