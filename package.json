@@ -1,9 +1,9 @@
 {
-  "name": "gatsby-starter-hello-world",
+  "name": "combinators-rs",
   "private": true,
-  "description": "A simplified bare-bones starter for Gatsby",
+  "description": "A reference for Rust combinators, applied to Option and Result types.",
   "version": "0.1.0",
-  "license": "0BSD",
+  "license": "MIT",
   "scripts": {
     "build": "gatsby build",
     "develop": "gatsby develop",
@@ -15,11 +15,19 @@
   },
   "dependencies": {
     "gatsby": "^2.23.12",
+    "gatsby-plugin-sass": "^2.3.12",
+    "node-sass": "^4.14.1",
     "react": "^16.12.0",
-    "react-dom": "^16.12.0"
+    "react-dom": "^16.12.0",
+    "react-helmet": "^6.1.0"
   },
   "devDependencies": {
-    "prettier": "2.0.5"
+    "@types/node": "^12.12.11",
+    "@types/react": "^16.9.11",
+    "@types/react-dom": "^16.9.4",
+    "@types/react-helmet": "^6.1.0",
+    "prettier": "2.0.5",
+    "typescript": "^3.9.5"
   },
   "repository": {
     "type": "git",

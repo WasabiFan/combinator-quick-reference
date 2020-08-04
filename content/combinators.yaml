@@ -1,0 +1,18 @@
+- have: Option<T>
+  want: T
+  panics: true
+  candidates:
+    - 'expect(self, msg: &str)'
+    - 'unwrap(self)'
+- have: Option<T>
+  given:
+    - type: T
+      desc: "A default value"
+  want: T
+  candidates: 'unwrap_or(self, default: T)'
+- have: Option<T>
+  given:
+    - type: Fn() -> T
+      desc: "A function to compute the default value"
+  want: T
+  candidates: 'unwrap_or_else(self, f: F)'
