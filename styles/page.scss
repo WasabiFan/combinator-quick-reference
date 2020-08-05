@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css?family=Raleway:400,300,600');
+
 $theme: darken(#e74c3c, 35%);
 
 body {
@@ -11,7 +13,13 @@ h1 {
 #header-bg {
     h1 {
         padding: 1em;
-        margin: 0
+        margin: 0;
+        padding-left: 0px;
+
+        code {
+            font-family: monospace;
+            background-color: darken($theme, 5%);
+        }
     }
     color: #fff;
     background-color: $theme;
@@ -26,8 +34,14 @@ h1 {
         padding: 5px 12px;
     }
 
-    tr:nth-child(1) {
-        border-color: #fff;
+    th {
+        font-weight: bold;
+        border-bottom: solid 1px #aaa;
+    }
+
+    th.want-subheader {
+        font-weight: normal;
+        font-size: small;
     }
 
     td:not(:nth-child(1)) {
@@ -80,5 +94,6 @@ h1 {
 
     #want-header {
         border: none;
+        padding-bottom: 0;
     }
 }

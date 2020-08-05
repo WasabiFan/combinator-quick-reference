@@ -36,13 +36,44 @@ interface TableRowProps {
     entry: Combinator
 }
 
-function TableRow({entry}: TableRowProps): JSX.Element {
+interface GivenProps {
+    value: Given
+}
+
+interface CandidateProps {
+    fn: string
+}
+
+interface CandidateListProps {
+    fns: string | string[]
+}
+
+function Given({ value }: GivenProps): JSX.Element {
+    return <span className="given-container">
+        <code>{value.type}</code>
+        <span className="given-desc">{value.desc}</span>
+    </span>
+}
+
+function Candidate({ fn }: CandidateProps): JSX.Element {
+    return <div><code>{fn}</code></div>
+}
+
+function CandidateList({ fns }: CandidateListProps): JSX.Element {
+    if (Array.isArray(fns)) {
+        return <>{fns.map(c => <Candidate fn={c}/>)}</>
+    } else {
+        return <Candidate fn={fns}/>;
+    }
+}
+
+function TableRow({ entry }: TableRowProps): JSX.Element {
     return <tr>
-        <td>{entry.have}</td>
-        <td>{entry.want}</td>
-        <td>{entry.panics ? "panic" : "" }</td>
-        <td>{JSON.stringify(entry.given)}</td>
-        <td>{JSON.stringify(entry.candidates)}</td>
+        <td><code>{entry.have}</code></td>
+        <td><code>{entry.want}</code></td>
+        <td>{entry.panics ? <span className="panic"/> : "" }</td>
+        <td>{(entry.given || []).map(g => <Given value={g} />)}</td>
+        <td><CandidateList fns={entry.candidates} /></td>
     </tr>
 }
  
@@ -51,13 +82,13 @@ export default function Home() {
         <Layout>
             <table className="combinator-table">
                 <tr>
-                    <th rowSpan={2}>I have...</th>
-                    <th id="want-header" colSpan={2}>I want...</th>
-                    <th rowSpan={2}>I can provide...</th>
-                    <th rowSpan={2}>...then you should use:</th>
+                    <th rowSpan={2}>I have</th>
+                    <th id="want-header" colSpan={2}>I want</th>
+                    <th rowSpan={2}>I can provide</th>
+                    <th rowSpan={2}>...then I should use:</th>
                 </tr>
                 <tr>
-                    <th className="want-subheader">Values</th>
+                    <th className="want-subheader">Value</th>
                     <th className="want-subheader">Side-effects</th>
                 </tr>
                 { APP_DATA.entries.map(e => <TableRow entry={e}/>) }

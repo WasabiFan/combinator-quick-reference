@@ -5,7 +5,8 @@ import SEO from "./seo";
 
 import "../../styles/normalize.css";
 import "../../styles/skeleton.css";
-import "../../styles/styles.scss";
+import "../../styles/page.scss";
+import "../../styles/content.scss";
 
 const Layout = ({ children }: { children: any }) => {
     return (
@@ -14,7 +15,7 @@ const Layout = ({ children }: { children: any }) => {
             <div id="header-bg">
                 <div className="section">
                     <div className="container">
-                        <h1>Result and Option quick-reference</h1>
+                        <h1><code>Result</code> and <code>Option</code> combinator quick-reference</h1>
                     </div>
                 </div>
             </div>

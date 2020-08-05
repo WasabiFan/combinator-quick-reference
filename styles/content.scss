@@ -1,0 +1,19 @@
+$danger: #e74c3c;
+
+code {
+    background: #666;
+    border: none;
+}
+
+.panic::after {
+    content: "!";
+    font-weight: bolder;
+    font-size: 3rem;
+    color: $danger;
+}
+
+.given-container {
+    .given-desc {
+        margin-left: 0.5em;
+    }
+}
