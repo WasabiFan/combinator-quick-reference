@@ -32,10 +32,36 @@ function preprocessData(importData: Combinator[]): AppData {
     return { entries };
 }
 
+interface TableRowProps {
+    entry: Combinator
+}
+
+function TableRow({entry}: TableRowProps): JSX.Element {
+    return <tr>
+        <td>{entry.have}</td>
+        <td>{entry.want}</td>
+        <td>{entry.panics ? "panic" : "" }</td>
+        <td>{JSON.stringify(entry.given)}</td>
+        <td>{JSON.stringify(entry.candidates)}</td>
+    </tr>
+}
+ 
 export default function Home() {
     return (
         <Layout>
-            <div>Data: {JSON.stringify(APP_DATA)}</div>
+            <table className="combinator-table">
+                <tr>
+                    <th rowSpan={2}>I have...</th>
+                    <th id="want-header" colSpan={2}>I want...</th>
+                    <th rowSpan={2}>I can provide...</th>
+                    <th rowSpan={2}>...then you should use:</th>
+                </tr>
+                <tr>
+                    <th className="want-subheader">Values</th>
+                    <th className="want-subheader">Side-effects</th>
+                </tr>
+                { APP_DATA.entries.map(e => <TableRow entry={e}/>) }
+            </table>
         </Layout>
     );
 }
