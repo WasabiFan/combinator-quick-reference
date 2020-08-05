@@ -23,10 +23,18 @@ interface AppData {
 
 const APP_DATA: AppData = preprocessData(COMBINATORS_DATA_IMPORT);
 
+function codeSimplicitySort(a: string, b: string): number {
+    if (a.length == b.length) {
+        return a.localeCompare(b);
+    } else {
+        return a.length - b.length;
+    }
+}
+
 function preprocessData(importData: Combinator[]): AppData {
     const entries = [...importData].sort(
-        (a, b) => a.have.localeCompare(b.have) || a.want.localeCompare(b.want)
-        // TODO: sort given and other fields
+        (a, b) => codeSimplicitySort(a.have, b.have) || codeSimplicitySort(a.want, b.want)
+        // Remaining fields are left in provided order
     );
 
     return { entries };
@@ -49,10 +57,10 @@ interface CandidateListProps {
 }
 
 function Given({ value }: GivenProps): JSX.Element {
-    return <span className="given-container">
+    return <div className="given-container">
         <code>{value.type}</code>
         <span className="given-desc">{value.desc}</span>
-    </span>
+    </div>
 }
 
 function Candidate({ fn }: CandidateProps): JSX.Element {

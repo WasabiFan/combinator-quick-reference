@@ -16,3 +16,40 @@
       desc: "A function to compute the default value"
   want: T
   candidates: 'unwrap_or_else(self, f: F)'
+- have: Option<T>
+  want: T
+  candidates: 'unwrap_or_default(self)'
+- have: Option<T>
+  given:
+    - type: Fn(T) -> U
+      desc: A function to compute the new value given the old one
+  want: Option<U>
+  candidates: 'map(self, f)'
+- have: Option<T>
+  given:
+    - type: U
+      desc: A default value
+    - type: Fn(T) -> U
+      desc: A function to compute the new value given the old one
+  want: U
+  candidates: 'map_or(self, default, f)'
+- have: Option<T>
+  given:
+    - type: Fn() -> U
+      desc: A function to compute a default value
+    - type: Fn(T) -> U
+      desc: A function to compute the new value given the old one
+  want: U
+  candidates: 'map_or_else(self, default, f)'
+- have: Option<T>
+  given:
+    - type: E
+      desc: An error value
+  want: Result<T, E>
+  candidates: 'ok_or(self, err)'
+- have: Option<T>
+  given:
+    - type: Fn() -> E
+      desc: A function to compute an error value
+  want: Result<T, E>
+  candidates: 'ok_or_else(self, err)'
