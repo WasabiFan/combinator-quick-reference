@@ -53,3 +53,45 @@
         desc: A function to compute an error value
   want: Result<T, E>
   candidates: "ok_or_else(self, err: F)"
+- have: Option<T>
+  given:
+      - type: Option<U>
+        desc: Another Option
+  want: Option<U>
+  candidates: "and(self, optb: Option<U>)"
+- have: Option<T>
+  given:
+      - type: "F: Fn(T) -> Option<U>"
+        desc: A function to compute a new Option given the current value
+  want: Option<U>
+  candidates: "and_then(self, f: F)"
+- have: Option<T>
+  given:
+      - type: Option<T>
+        desc: Another Option
+  want: Option<T>
+  candidates: "or(self, optb: Option<U>)"
+- have: Option<T>
+  given:
+      - type: "F: Fn() -> Option<T>"
+        desc: A function to compute another Option
+  want: Option<T>
+  candidates: "or_else(self, f: F)"
+- have: Option<T>
+  given:
+    - type: "P: Fn(&T) -> bool"
+      desc: A predicate taking a reference to the current value
+  want: Option<T>
+  candidates: "filter<P>(self, predicate: P)"
+- have: Option<T>
+  given:
+    - type: Option<T>
+      desc: Another Option
+  want: Option<T>
+  candidates: "xor(self, optb: Option<T>)"
+- have: Option<Result<T, E>>
+  want: Result<Option<T>, E>
+  candidates: "transpose(self)"
+- have: Option<Option<T>>
+  want: Option<T>
+  candidates: "flatten(self)"

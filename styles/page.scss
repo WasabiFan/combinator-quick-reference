@@ -2,6 +2,10 @@
 
 $theme: darken(#e74c3c, 35%);
 
+.container {
+    max-width: 1500px;
+}
+
 body {
     background-color: #222;
 }
