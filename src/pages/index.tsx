@@ -33,7 +33,9 @@ function codeSimplicitySort(a: string, b: string): number {
 
 function preprocessData(importData: Combinator[]): AppData {
     const entries = [...importData].sort(
-        (a, b) => codeSimplicitySort(a.have, b.have) || codeSimplicitySort(a.want, b.want)
+        (a, b) =>
+            codeSimplicitySort(a.have, b.have) ||
+            codeSimplicitySort(a.want, b.want)
         // Remaining fields are left in provided order
     );
 
@@ -41,49 +43,162 @@ function preprocessData(importData: Combinator[]): AppData {
 }
 
 interface TableRowProps {
-    entry: Combinator
+    entry: Combinator;
 }
 
 interface GivenProps {
-    value: Given
+    value: Given;
 }
 
 interface CandidateProps {
-    fn: string
+    fn: string;
 }
 
 interface CandidateListProps {
-    fns: string | string[]
+    fns: string | string[];
+}
+
+interface HighlightedTypeProps {
+    type: string;
+}
+
+interface HighlightedTypePartProps {
+    typeNode: TypeNode;
+}
+
+interface TypeNode {
+    name: string;
+    generics?: TypeNode[];
+}
+
+const ANCHORED_IDENTIFIER_WITH_GENERICS_REGEX = /^([a-zA-Z]+)(?:<(?:((?:[^<>]|<.*>)*),)*(.*)>)?/;
+function parseType(type: string): TypeNode {
+    const match = ANCHORED_IDENTIFIER_WITH_GENERICS_REGEX.exec(type) ?? [];
+    const [, ...groups] = [...match];
+    console.log(groups);
+
+    if (groups.length < 1) {
+        throw new Error("Parse error");
+    }
+
+    const generics = groups
+        .slice(1)
+        .filter(str => str != undefined)
+        .map(str => parseType(str.trim()));
+
+    return {
+        name: groups[0].trim(),
+        generics: generics.length ? generics : undefined,
+    };
 }
 
 function Given({ value }: GivenProps): JSX.Element {
-    return <div className="given-container">
-        <code>{value.type}</code>
-        <span className="given-desc">{value.desc}</span>
-    </div>
+    return (
+        <div className="given-container">
+            <code>{value.type}</code>
+            <span className="given-desc">{value.desc}</span>
+        </div>
+    );
 }
 
 function Candidate({ fn }: CandidateProps): JSX.Element {
-    return <div><code>{fn}</code></div>
+    return (
+        <div>
+            <code>{fn}</code>
+        </div>
+    );
 }
 
 function CandidateList({ fns }: CandidateListProps): JSX.Element {
     if (Array.isArray(fns)) {
-        return <>{fns.map(c => <Candidate fn={c}/>)}</>
+        return (
+            <>
+                {fns.map(c => (
+                    <Candidate key={c} fn={c} />
+                ))}
+            </>
+        );
     } else {
-        return <Candidate fn={fns}/>;
+        return <Candidate fn={fns} />;
     }
 }
 
-function TableRow({ entry }: TableRowProps): JSX.Element {
-    return <tr>
-        <td><code>{entry.have}</code></td>
-        <td><code>{entry.want}</code> { entry.panics && "or panic" }</td>
-        <td>{(entry.given || []).map(g => <Given value={g} />)}</td>
-        <td><CandidateList fns={entry.candidates} /></td>
-    </tr>
+function HighlightedTypePart({
+    typeNode,
+}: HighlightedTypePartProps): JSX.Element {
+    if (typeNode.generics) {
+        return (
+            <>
+                <span className={`code-concrete-type`}>{typeNode.name}</span>
+                {"<"}
+                {typeNode.generics
+                    .map(v => (
+                        <HighlightedTypePart
+                            key={JSON.stringify(v)}
+                            typeNode={v}
+                        />
+                    ))
+                    .reduce<JSX.Element | null>(
+                        (acc, x) =>
+                            acc === null ? (
+                                x
+                            ) : (
+                                <>
+                                    {acc}, {x}
+                                </>
+                            ),
+                        null
+                    )}
+                {">"}
+            </>
+        );
+    } else {
+        if (["T", "U", "D", "E", "F"].includes(typeNode.name)) {
+            return (
+                <span
+                    className={`code-generic-param code-generic-param-${typeNode.name}`}
+                >
+                    {typeNode.name}
+                </span>
+            );
+        } else {
+            return (
+                <span className={`code-concrete-type`}>{typeNode.name}</span>
+            );
+        }
+    }
 }
- 
+
+function HighlightedType({ type }: HighlightedTypeProps): JSX.Element {
+    return <HighlightedTypePart typeNode={parseType(type)} />;
+}
+
+function TableRow({ entry }: TableRowProps): JSX.Element {
+    return (
+        <tr>
+            <td>
+                <code>
+                    <HighlightedType type={entry.have}></HighlightedType>
+                </code>
+            </td>
+            <td>
+                <code>
+                    <HighlightedType type={entry.want}></HighlightedType>
+                </code>{" "}
+                {entry.panics && "or panic"}
+            </td>
+            <td>
+                {(entry.given || []).map(g => (
+                    <Given key={g.type} value={g} />
+                ))}
+            </td>
+            <td>
+                <CandidateList fns={entry.candidates} />
+            </td>
+        </tr>
+    );
+}
+
 export default function Home() {
     return (
         <Layout>
@@ -94,7 +209,9 @@ export default function Home() {
                     <th>I can provide</th>
                     <th>...then I should use:</th>
                 </tr>
-                { APP_DATA.entries.map(e => <TableRow entry={e}/>) }
+                {APP_DATA.entries.map(e => (
+                    <TableRow key={JSON.stringify(e)} entry={e} />
+                ))}
             </table>
         </Layout>
     );

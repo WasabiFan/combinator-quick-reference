@@ -8,3 +8,21 @@ code {
         margin-left: 0.5em;
     }
 }
+
+.code-concrete-type {
+    // TODO
+}
+
+$genericParamColors: (
+    "T": lightskyblue,
+    "U": gold, 
+    "D": orchid, 
+    "E": gold, 
+    "F": orchid,
+);
+
+@each $name, $color in $genericParamColors {
+    .code-generic-param-#{$name} {
+        color: $color;
+    }
+}
