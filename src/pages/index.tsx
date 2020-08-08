@@ -75,7 +75,6 @@ const ANCHORED_IDENTIFIER_WITH_GENERICS_REGEX = /^([a-zA-Z]+)(?:<(?:((?:[^<>]|<.
 function parseType(type: string): TypeNode {
     const match = ANCHORED_IDENTIFIER_WITH_GENERICS_REGEX.exec(type) ?? [];
     const [, ...groups] = [...match];
-    console.log(groups);
 
     if (groups.length < 1) {
         throw new Error("Parse error");
@@ -123,6 +122,20 @@ function CandidateList({ fns }: CandidateListProps): JSX.Element {
     }
 }
 
+function commaJoin(elements: JSX.Element[]): JSX.Element | null {
+    return elements.reduce<JSX.Element | null>(
+        (acc, x) =>
+            acc === null ? (
+                x
+            ) : (
+                <>
+                    {acc}, {x}
+                </>
+            ),
+        null
+    );
+}
+
 function HighlightedTypePart({
     typeNode,
 }: HighlightedTypePartProps): JSX.Element {
@@ -131,24 +144,14 @@ function HighlightedTypePart({
             <>
                 <span className={`code-concrete-type`}>{typeNode.name}</span>
                 {"<"}
-                {typeNode.generics
-                    .map(v => (
+                {commaJoin(
+                    typeNode.generics.map(v => (
                         <HighlightedTypePart
                             key={JSON.stringify(v)}
                             typeNode={v}
                         />
                     ))
-                    .reduce<JSX.Element | null>(
-                        (acc, x) =>
-                            acc === null ? (
-                                x
-                            ) : (
-                                <>
-                                    {acc}, {x}
-                                </>
-                            ),
-                        null
-                    )}
+                )}
                 {">"}
             </>
         );
@@ -203,15 +206,19 @@ export default function Home() {
     return (
         <Layout>
             <table className="combinator-table">
-                <tr>
-                    <th>I have</th>
-                    <th>I want</th>
-                    <th>I can provide</th>
-                    <th>...then I should use:</th>
-                </tr>
-                {APP_DATA.entries.map(e => (
-                    <TableRow key={JSON.stringify(e)} entry={e} />
-                ))}
+                <thead>
+                    <tr>
+                        <th>I have</th>
+                        <th>I want</th>
+                        <th>I can provide</th>
+                        <th>...then I should use:</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {APP_DATA.entries.map(e => (
+                        <TableRow key={JSON.stringify(e)} entry={e} />
+                    ))}
+                </tbody>
             </table>
         </Layout>
     );
