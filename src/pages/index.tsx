@@ -78,8 +78,7 @@ function CandidateList({ fns }: CandidateListProps): JSX.Element {
 function TableRow({ entry }: TableRowProps): JSX.Element {
     return <tr>
         <td><code>{entry.have}</code></td>
-        <td><code>{entry.want}</code></td>
-        <td>{entry.panics ? <span className="panic"/> : "" }</td>
+        <td><code>{entry.want}</code> { entry.panics && "or panic" }</td>
         <td>{(entry.given || []).map(g => <Given value={g} />)}</td>
         <td><CandidateList fns={entry.candidates} /></td>
     </tr>
@@ -90,14 +89,10 @@ export default function Home() {
         <Layout>
             <table className="combinator-table">
                 <tr>
-                    <th rowSpan={2}>I have</th>
-                    <th id="want-header" colSpan={2}>I want</th>
-                    <th rowSpan={2}>I can provide</th>
-                    <th rowSpan={2}>...then I should use:</th>
-                </tr>
-                <tr>
-                    <th className="want-subheader">Value</th>
-                    <th className="want-subheader">Side-effects</th>
+                    <th>I have</th>
+                    <th>I want</th>
+                    <th>I can provide</th>
+                    <th>...then I should use:</th>
                 </tr>
                 { APP_DATA.entries.map(e => <TableRow entry={e}/>) }
             </table>
