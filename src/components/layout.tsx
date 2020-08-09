@@ -6,7 +6,6 @@ import SEO from "./seo";
 import "../../styles/normalize.css";
 import "../../styles/skeleton.css";
 import "../../styles/page.scss";
-import "../../styles/content.scss";
 
 const Layout = ({ children }: { children: any }) => {
     return (

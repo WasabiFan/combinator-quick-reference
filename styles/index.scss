@@ -1,0 +1,68 @@
+@import 'variables.scss';
+
+.given-container {
+    .given-desc {
+        margin-left: 0.5em;
+    }
+}
+
+.combinator-table {
+    color: #fff;
+
+    th, td {
+        padding: 5px 12px;
+    }
+
+    th {
+        font-weight: bold;
+        border-bottom: solid 1px #aaa;
+    }
+
+    td:not(:nth-child(1)) {
+        border-left: dashed 1px #666;
+    }
+
+    tr:first-child {
+        th:first-child {
+            border-top-left-radius: 7px;
+        }
+
+        th:last-child {
+            border-top-right-radius: 7px;
+        }
+    }
+
+    th {
+        background-color: $theme;
+    }
+
+    tr:first-child {
+        th:nth-child(2n+1) {
+            background-color: darken($theme, 2%);
+        }
+    }
+
+    tr:last-child td {
+        border-bottom: none;
+    }
+
+    td {
+        border-bottom: 1px solid #666;
+    }
+
+    tr:nth-child(2n-1) {
+        border-radius: 7px;
+        background-color: #444;
+    }
+
+    tr:nth-child(2n) {
+        border-radius: 7px;
+        background-color: #303030;
+    }
+
+    th {
+        white-space: nowrap;
+        text-align: center;
+        padding: 5px 12px;
+    }
+}

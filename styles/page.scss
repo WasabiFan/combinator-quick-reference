@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css?family=Raleway:400,300,600');
 
-$theme: darken(#e74c3c, 35%);
+@import 'variables.scss';
 
 .container {
     max-width: 1500px;
@@ -31,63 +31,7 @@ h1 {
     margin-bottom: 2em;
 }
 
-.combinator-table {
-    color: #fff;
-
-    th, td {
-        padding: 5px 12px;
-    }
-
-    th {
-        font-weight: bold;
-        border-bottom: solid 1px #aaa;
-    }
-
-    td:not(:nth-child(1)) {
-        border-left: dashed 1px #666;
-    }
-
-    tr:first-child {
-        th:first-child {
-            border-top-left-radius: 7px;
-        }
-
-        th:last-child {
-            border-top-right-radius: 7px;
-        }
-    }
-
-    th {
-        background-color: $theme;
-    }
-
-    tr:first-child {
-        th:nth-child(2n+1) {
-            background-color: darken($theme, 2%);
-        }
-    }
-
-    tr:last-child td {
-        border-bottom: none;
-    }
-
-    td {
-        border-bottom: 1px solid #666;
-    }
-
-    tr:nth-child(2n-1) {
-        border-radius: 7px;
-        background-color: #444;
-    }
-
-    tr:nth-child(2n) {
-        border-radius: 7px;
-        background-color: #303030;
-    }
-
-    th {
-        white-space: nowrap;
-        text-align: center;
-        padding: 5px 12px;
-    }
+code {
+    background: #666;
+    border: none;
 }
