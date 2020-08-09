@@ -66,9 +66,17 @@ interface HighlightedTypePartProps {
     typeNode: TypeNode;
 }
 
-interface TypeNode {
+type TypeNode = BareIdentifierTypeNode | GenericIdentifierTypeNode;
+
+interface BareIdentifierTypeNode {
+    type: "bare_identifier",
     name: string;
-    generics?: TypeNode[];
+}
+
+interface GenericIdentifierTypeNode {
+    type: "generic_identifier",
+    name: string;
+    generics: TypeNode[];
 }
 
 const ANCHORED_IDENTIFIER_WITH_GENERICS_REGEX = /^([a-zA-Z]+)(?:<(?:((?:[^<>]|<.*>)*),)*(.*)>)?/;
@@ -80,15 +88,24 @@ function parseType(type: string): TypeNode {
         throw new Error("Parse error");
     }
 
+    const name = groups[0].trim();
     const generics = groups
         .slice(1)
         .filter(str => str != undefined)
         .map(str => parseType(str.trim()));
 
-    return {
-        name: groups[0].trim(),
-        generics: generics.length ? generics : undefined,
-    };
+    if (generics.length) {
+        return {
+            type: 'generic_identifier',
+            generics,
+            name
+        }
+    } else {
+        return {
+            type: 'bare_identifier',
+            name
+        }
+    }
 }
 
 function Given({ value }: GivenProps): JSX.Element {
@@ -139,7 +156,7 @@ function commaJoin(elements: JSX.Element[]): JSX.Element | null {
 function HighlightedTypePart({
     typeNode,
 }: HighlightedTypePartProps): JSX.Element {
-    if (typeNode.generics) {
+    if (typeNode.type == "generic_identifier") {
         return (
             <>
                 <span className={`code-concrete-type`}>{typeNode.name}</span>
