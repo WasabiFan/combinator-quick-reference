@@ -2,6 +2,8 @@ import "../../styles/types.scss";
 import React from "react";
 import { elementJoin } from "../utils/jsx_utils";
 
+import _ from 'lodash';
+
 export interface HighlightedTypeProps {
     type: string;
 }
@@ -15,7 +17,8 @@ type TypeNode =
     | GenericIdentifierTypeNode
     | TypeParameterTypeNode
     | FnTypeNode
-    | ReferenceTypeNode;
+    | ReferenceTypeNode
+    | FunctionSignatureTypeNode;
 
 interface BareIdentifierTypeNode {
     nodeType: "bare_identifier";
@@ -43,6 +46,18 @@ interface FnTypeNode {
 interface ReferenceTypeNode {
     nodeType: "reference";
     target: TypeNode;
+}
+
+interface FunctionSignatureParameter {
+    name: string;
+    type: TypeNode;
+}
+
+interface FunctionSignatureTypeNode {
+    nodeType: "function_signature";
+    name: string;
+    self: BareIdentifierTypeNode | ReferenceTypeNode;
+    parameters: FunctionSignatureParameter[];
 }
 
 const ANCHORED_IDENTIFIER_WITH_GENERICS_REGEX = /^([a-zA-Z]+)(?:<(?:((?:[^<>]|<.*>)*),)*(.*)>)?$/;
@@ -97,9 +112,9 @@ function tryParseTypeParameter(type: string): TypeParameterTypeNode | null {
     };
 }
 
-const ANCHORED_FUNCTION_REGEX = /^Fn\((.*)\)\s*->\s*(.*)$/;
-function tryParseFunction(type: string): FnTypeNode | null {
-    const match = ANCHORED_FUNCTION_REGEX.exec(type) ?? [];
+const ANCHORED_FUNCTION_LAMBDA_REGEX = /^Fn\((.*)\)\s*->\s*(.*)$/;
+function tryParseFunctionLambda(type: string): FnTypeNode | null {
+    const match = ANCHORED_FUNCTION_LAMBDA_REGEX.exec(type) ?? [];
     const [, paramStr, returnValueStr] = [...match];
 
     if (!match || !returnValueStr) {
@@ -110,6 +125,33 @@ function tryParseFunction(type: string): FnTypeNode | null {
         nodeType: "fn_type",
         returnType: parseType(returnValueStr),
         parameterType: paramStr.trim() ? parseType(paramStr.trim()) : undefined,
+    };
+}
+
+const ANCHORED_FUNCTION_SIGNATURE_REGEX = /^([a-zA-Z_]+)\((self|&self)(?:\s*,\s*((?:[^,]|<.*>)+))*\)$/;
+function tryParseFunctionSignature(type: string): FunctionSignatureTypeNode | null {
+    const match = ANCHORED_FUNCTION_SIGNATURE_REGEX.exec(type) ?? [];
+    const [, name, selfStr, ...paramStrs] = [...match];
+
+    if (!match || !selfStr || !paramStrs) {
+        return null;
+    }
+
+    const self = tryParseReference(selfStr) || tryParseIdentifier(selfStr);
+    if (!self || (self.nodeType != "bare_identifier" && self.nodeType != "reference")) {
+        return null;
+    }
+
+    const parameters = paramStrs.filter(v => !!v).map(str => {
+        const [paramName, paramType] = str.split(":");
+        return { name: paramName.trim(), type: parseType(paramType.trim()) };
+    });
+
+    return {
+        nodeType: "function_signature",
+        name: name,
+        self,
+        parameters
     };
 }
 
@@ -144,7 +186,12 @@ function parseType(type: string): TypeNode {
         return referenceResult;
     }
 
-    const functionResult = tryParseFunction(type);
+    const lambdaResult = tryParseFunctionLambda(type);
+    if (lambdaResult) {
+        return lambdaResult;
+    }
+
+    const functionResult = tryParseFunctionSignature(type);
     if (functionResult) {
         return functionResult;
     }
@@ -216,6 +263,17 @@ function HighlightedTypePart({
             <>
                 {"&"}
                 <HighlightedTypePart typeNode={typeNode.target} />
+            </>
+        );
+    } else if (typeNode.nodeType == "function_signature") {
+        const self = <HighlightedTypePart typeNode={typeNode.self}/>;
+        const parameters = typeNode.parameters.map(param => <>{param.name}: <HighlightedTypePart typeNode={param.type}/></>);
+        return (
+            <>
+                {typeNode.name}
+                <SyntaxPunctuation char="("/>
+                { elementJoin([self, ...parameters], <SyntaxPunctuation char=", " />)}
+                <SyntaxPunctuation char=")"/>
             </>
         );
     } else {

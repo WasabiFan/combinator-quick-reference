@@ -76,7 +76,7 @@ function Given({ value }: GivenProps): JSX.Element {
 function Candidate({ fn }: CandidateProps): JSX.Element {
     return (
         <div>
-            <code>{fn}</code>
+            <code><HighlightedType type={fn}/></code>
         </div>
     );
 }

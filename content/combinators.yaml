@@ -82,7 +82,7 @@
     - type: "P: Fn(&T) -> bool"
       desc: A predicate taking a reference to the current value
   want: Option<T>
-  candidates: "filter<P>(self, predicate: P)"
+  candidates: "filter(self, predicate: P)"
 - have: Option<T>
   given:
     - type: Option<T>
