@@ -65,7 +65,9 @@ interface CandidateListProps {
 function Given({ value }: GivenProps): JSX.Element {
     return (
         <div className="given-container">
-            <code>{value.type}</code>
+            <code>
+                <HighlightedType type={value.type} />
+            </code>
             <span className="given-desc">{value.desc}</span>
         </div>
     );
