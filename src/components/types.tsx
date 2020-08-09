@@ -1,6 +1,6 @@
 import "../../styles/types.scss";
 import React from "react";
-import { commaJoin } from "../utils/jsx_utils";
+import { elementJoin } from "../utils/jsx_utils";
 
 export interface HighlightedTypeProps {
     type: string;
@@ -152,6 +152,10 @@ function parseType(type: string): TypeNode {
     throw new Error(`Error parsing type fragment: "${type}"`);
 }
 
+function SyntaxPunctuation({ char }: { char: string }): JSX.Element {
+    return <span className="code-syntax-punctuation">{char}</span>
+}
+
 function HighlightedTypePart({
     typeNode,
 }: HighlightedTypePartProps): JSX.Element {
@@ -159,20 +163,21 @@ function HighlightedTypePart({
         return (
             <>
                 <span className={`code-concrete-type`}>{typeNode.name}</span>
-                {"<"}
-                {commaJoin(
+                <SyntaxPunctuation char="<"/>
+                {elementJoin(
                     typeNode.generics.map(v => (
                         <HighlightedTypePart
                             key={JSON.stringify(v)}
                             typeNode={v}
                         />
-                    ))
+                    )),
+                    <SyntaxPunctuation char=", " />
                 )}
-                {">"}
+                <SyntaxPunctuation char=">"/>
             </>
         );
     } else if (typeNode.nodeType == "bare_identifier") {
-        if (["T", "U", "D", "E", "F"].includes(typeNode.name)) {
+        if (["T", "U", "D", "E", "F", "P"].includes(typeNode.name)) {
             return (
                 <span
                     className={`code-generic-param code-generic-param-${typeNode.name}`}
@@ -188,18 +193,22 @@ function HighlightedTypePart({
     } else if (typeNode.nodeType == "type_parameter_spec") {
         return (
             <>
-                <HighlightedTypePart typeNode={typeNode.name} />:{" "}
+                <HighlightedTypePart typeNode={typeNode.name} />
+                <SyntaxPunctuation char=":"/>{" "}
                 <HighlightedTypePart typeNode={typeNode.value} />
             </>
         );
     } else if (typeNode.nodeType == "fn_type") {
         return (
             <>
-                Fn(
+                Fn
+                <SyntaxPunctuation char="("/>
                 {typeNode.parameterType && (
                     <HighlightedTypePart typeNode={typeNode.parameterType} />
                 )}
-                ) {"->"} <HighlightedTypePart typeNode={typeNode.returnType} />
+                <SyntaxPunctuation char=")"/> 
+                {" -> "}
+                <HighlightedTypePart typeNode={typeNode.returnType} />
             </>
         );
     } else if (typeNode.nodeType == "reference") {

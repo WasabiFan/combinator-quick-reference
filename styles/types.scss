@@ -8,10 +8,15 @@ $genericParamColors: (
     "D": orchid, 
     "E": gold, 
     "F": orchid,
+    "P": gold, 
 );
 
 @each $name, $color in $genericParamColors {
     .code-generic-param-#{$name} {
         color: $color;
     }
+}
+
+.code-syntax-punctuation {
+    color: #bbb;
 }
