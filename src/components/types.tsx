@@ -1,6 +1,6 @@
-import '../../styles/types.scss';
+import "../../styles/types.scss";
 import React from "react";
-import { commaJoin } from '../utils/jsx_utils';
+import { commaJoin } from "../utils/jsx_utils";
 
 export interface HighlightedTypeProps {
     type: string;
@@ -13,12 +13,12 @@ interface HighlightedTypePartProps {
 type TypeNode = BareIdentifierTypeNode | GenericIdentifierTypeNode;
 
 interface BareIdentifierTypeNode {
-    type: "bare_identifier",
+    type: "bare_identifier";
     name: string;
 }
 
 interface GenericIdentifierTypeNode {
-    type: "generic_identifier",
+    type: "generic_identifier";
     name: string;
     generics: TypeNode[];
 }
@@ -40,15 +40,15 @@ function parseType(type: string): TypeNode {
 
     if (generics.length) {
         return {
-            type: 'generic_identifier',
+            type: "generic_identifier",
             generics,
-            name
-        }
+            name,
+        };
     } else {
         return {
-            type: 'bare_identifier',
-            name
-        }
+            type: "bare_identifier",
+            name,
+        };
     }
 }
 
@@ -88,6 +88,8 @@ function HighlightedTypePart({
     }
 }
 
-export default function HighlightedType({ type }: HighlightedTypeProps): JSX.Element {
+export default function HighlightedType({
+    type,
+}: HighlightedTypeProps): JSX.Element {
     return <HighlightedTypePart typeNode={parseType(type)} />;
 }

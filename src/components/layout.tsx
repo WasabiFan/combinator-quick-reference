@@ -14,7 +14,10 @@ const Layout = ({ children }: { children: any }) => {
             <div id="header-bg">
                 <div className="section">
                     <div className="container">
-                        <h1><code>Result</code> and <code>Option</code> combinator quick-reference</h1>
+                        <h1>
+                            <code>Result</code> and <code>Option</code>{" "}
+                            combinator quick-reference
+                        </h1>
                     </div>
                 </div>
             </div>
