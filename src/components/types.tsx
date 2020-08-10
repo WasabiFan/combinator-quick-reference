@@ -128,12 +128,12 @@ function tryParseFunctionLambda(type: string): FnTypeNode | null {
     };
 }
 
-const ANCHORED_FUNCTION_SIGNATURE_REGEX = /^([a-zA-Z_]+)\((self|&self)(?:\s*,\s*((?:[^,]|<.*>)+))*\)$/;
+const ANCHORED_FUNCTION_SIGNATURE_REGEX = /^([a-zA-Z_]+)\((self|&self)((?:\s*,\s*(?:[^,]|<.*>)+)*)\)$/;
 function tryParseFunctionSignature(type: string): FunctionSignatureTypeNode | null {
     const match = ANCHORED_FUNCTION_SIGNATURE_REGEX.exec(type) ?? [];
-    const [, name, selfStr, ...paramStrs] = [...match];
+    const [, name, selfStr, paramStr] = [...match];
 
-    if (!match || !selfStr || !paramStrs) {
+    if (!match || !selfStr) {
         return null;
     }
 
@@ -142,6 +142,19 @@ function tryParseFunctionSignature(type: string): FunctionSignatureTypeNode | nu
         return null;
     }
 
+    function splitParamStrs(partial: string): string[] {
+        if (!partial.trim()) {
+            return [];
+        }
+
+        const LEADING_PARAM_REGEX = /^\s*,\s*((?:[^,]|<.*>)+)/;
+        const paramMatch = LEADING_PARAM_REGEX.exec(partial) ?? [];
+        const [fullMatch, param] = [...paramMatch];
+
+        return [param, ...splitParamStrs(partial.slice(fullMatch.length))];
+    }
+
+    const paramStrs = splitParamStrs(paramStr);
     const parameters = paramStrs.filter(v => !!v).map(str => {
         const [paramName, paramType] = str.split(":");
         return { name: paramName.trim(), type: parseType(paramType.trim()) };
