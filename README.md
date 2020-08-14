@@ -1,6 +1,8 @@
-# Rust combinator quick-reference
+# Rust combinator quick-reference ![Gatsby Publish](https://github.com/WasabiFan/combinator-quick-reference/workflows/Gatsby%20Publish/badge.svg)
 
 A type-indexed cheat-sheet for Rust's `Result` and `Option` "combinators": `unwrap`, `map`, `ok`, etc.
+
+https://wasabifan.github.io/combinator-quick-reference/
 
 ## What's a "combinator"?
 
