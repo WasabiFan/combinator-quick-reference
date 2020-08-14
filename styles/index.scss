@@ -18,17 +18,23 @@
         border-bottom: solid 1px #aaa;
     }
 
+    thead.section-header th {
+        border-bottom: none;
+    }
+
     td:not(:nth-child(1)) {
         border-left: dashed 1px #666;
     }
 
-    tr:first-child {
-        th:first-child {
-            border-top-left-radius: 7px;
-        }
+    .primary-header {
+        tr:first-child {
+            th:first-child {
+                border-top-left-radius: 7px;
+            }
 
-        th:last-child {
-            border-top-right-radius: 7px;
+            th:last-child {
+                border-top-right-radius: 7px;
+            }
         }
     }
 

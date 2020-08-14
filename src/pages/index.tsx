@@ -21,8 +21,13 @@ interface Combinator {
     given: Given[];
 }
 
+interface Section {
+    header: string;
+    items: Combinator[]
+}
+
 interface AppData {
-    entries: Combinator[];
+    sections: Section[];
 }
 
 const APP_DATA: AppData = preprocessData(COMBINATORS_DATA_IMPORT);
@@ -35,15 +40,16 @@ function codeSimplicitySort(a: string, b: string): number {
     }
 }
 
-function preprocessData(importData: Combinator[]): AppData {
-    const entries = [...importData].sort(
-        (a, b) =>
-            codeSimplicitySort(a.have, b.have) ||
-            codeSimplicitySort(a.want, b.want)
-        // Remaining fields are left in provided order
-    );
-
-    return { entries };
+function preprocessData(importData: Section[]): AppData {
+    return { sections: importData.map(s => {
+        const items = [...s.items].sort(
+            (a, b) =>
+                codeSimplicitySort(a.have, b.have) ||
+                codeSimplicitySort(a.want, b.want)
+            // Remaining fields are left in provided order
+        );
+        return { header: s.header, items }
+    })};
 }
 
 interface TableRowProps {
@@ -125,7 +131,7 @@ export default function Home() {
     return (
         <Layout>
             <table className="combinator-table">
-                <thead>
+                <thead className="primary-header">
                     <tr>
                         <th>I have</th>
                         <th>I want</th>
@@ -133,11 +139,16 @@ export default function Home() {
                         <th>...then I should use:</th>
                     </tr>
                 </thead>
-                <tbody>
-                    {APP_DATA.entries.map(e => (
-                        <TableRow key={JSON.stringify(e)} entry={e} />
-                    ))}
-                </tbody>
+                {APP_DATA.sections.map(s =>
+                    <React.Fragment key={s.header}>
+                        <thead className="section-header"><tr><th colSpan={4}>{s.header}</th></tr></thead>
+                        <tbody>
+                            {s.items.map(e => (
+                                <TableRow key={JSON.stringify(e)} entry={e} />
+                            ))}
+                        </tbody>
+                    </React.Fragment>
+                )}
             </table>
         </Layout>
     );
