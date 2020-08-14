@@ -23,7 +23,7 @@ interface Combinator {
 
 interface Section {
     header: string;
-    items: Combinator[]
+    items: Combinator[];
 }
 
 interface AppData {
@@ -66,7 +66,9 @@ function Given({ value }: GivenProps): JSX.Element {
 function Candidate({ fn }: CandidateProps): JSX.Element {
     return (
         <div>
-            <code><HighlightedType type={fn}/></code>
+            <code>
+                <HighlightedType type={fn} />
+            </code>
         </div>
     );
 }
@@ -123,16 +125,20 @@ export default function Home() {
                         <th>...then I should use:</th>
                     </tr>
                 </thead>
-                {APP_DATA.sections.map(s =>
+                {APP_DATA.sections.map(s => (
                     <React.Fragment key={s.header}>
-                        <thead className="section-header"><tr><th colSpan={4}>{s.header}</th></tr></thead>
+                        <thead className="section-header">
+                            <tr>
+                                <th colSpan={4}>{s.header}</th>
+                            </tr>
+                        </thead>
                         <tbody>
                             {s.items.map(e => (
                                 <TableRow key={JSON.stringify(e)} entry={e} />
                             ))}
                         </tbody>
                     </React.Fragment>
-                )}
+                ))}
             </table>
         </Layout>
     );

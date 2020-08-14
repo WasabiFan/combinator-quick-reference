@@ -2,7 +2,7 @@ import "../../styles/types.scss";
 import React from "react";
 import { elementJoin } from "../utils/jsx_utils";
 
-import _ from 'lodash';
+import _ from "lodash";
 
 export interface HighlightedTypeProps {
     type: string;
@@ -129,7 +129,9 @@ function tryParseFunctionLambda(type: string): FnTypeNode | null {
 }
 
 const ANCHORED_FUNCTION_SIGNATURE_REGEX = /^([a-zA-Z_]+)\((self|&self)((?:\s*,\s*(?:[^,]|<.*>)+)*)\)$/;
-function tryParseFunctionSignature(type: string): FunctionSignatureTypeNode | null {
+function tryParseFunctionSignature(
+    type: string
+): FunctionSignatureTypeNode | null {
     const match = ANCHORED_FUNCTION_SIGNATURE_REGEX.exec(type) ?? [];
     const [, name, selfStr, paramStr] = [...match];
 
@@ -138,7 +140,10 @@ function tryParseFunctionSignature(type: string): FunctionSignatureTypeNode | nu
     }
 
     const self = tryParseReference(selfStr) || tryParseIdentifier(selfStr);
-    if (!self || (self.nodeType != "bare_identifier" && self.nodeType != "reference")) {
+    if (
+        !self ||
+        (self.nodeType != "bare_identifier" && self.nodeType != "reference")
+    ) {
         return null;
     }
 
@@ -155,16 +160,21 @@ function tryParseFunctionSignature(type: string): FunctionSignatureTypeNode | nu
     }
 
     const paramStrs = splitParamStrs(paramStr);
-    const parameters = paramStrs.filter(v => !!v).map(str => {
-        const [paramName, paramType] = str.split(":");
-        return { name: paramName.trim(), type: parseType(paramType.trim()) };
-    });
+    const parameters = paramStrs
+        .filter(v => !!v)
+        .map(str => {
+            const [paramName, paramType] = str.split(":");
+            return {
+                name: paramName.trim(),
+                type: parseType(paramType.trim()),
+            };
+        });
 
     return {
         nodeType: "function_signature",
         name: name,
         self,
-        parameters
+        parameters,
     };
 }
 
@@ -213,7 +223,7 @@ function parseType(type: string): TypeNode {
 }
 
 function SyntaxPunctuation({ char }: { char: string }): JSX.Element {
-    return <span className="code-syntax-punctuation">{char}</span>
+    return <span className="code-syntax-punctuation">{char}</span>;
 }
 
 function HighlightedTypePart({
@@ -223,7 +233,7 @@ function HighlightedTypePart({
         return (
             <>
                 <span className={`code-concrete-type`}>{typeNode.name}</span>
-                <SyntaxPunctuation char="<"/>
+                <SyntaxPunctuation char="<" />
                 {elementJoin(
                     typeNode.generics.map(v => (
                         <HighlightedTypePart
@@ -233,7 +243,7 @@ function HighlightedTypePart({
                     )),
                     <SyntaxPunctuation char=", " />
                 )}
-                <SyntaxPunctuation char=">"/>
+                <SyntaxPunctuation char=">" />
             </>
         );
     } else if (typeNode.nodeType == "bare_identifier") {
@@ -254,7 +264,7 @@ function HighlightedTypePart({
         return (
             <>
                 <HighlightedTypePart typeNode={typeNode.name} />
-                <SyntaxPunctuation char=":"/>{" "}
+                <SyntaxPunctuation char=":" />{" "}
                 <HighlightedTypePart typeNode={typeNode.value} />
             </>
         );
@@ -262,11 +272,11 @@ function HighlightedTypePart({
         return (
             <>
                 Fn
-                <SyntaxPunctuation char="("/>
+                <SyntaxPunctuation char="(" />
                 {typeNode.parameterType && (
                     <HighlightedTypePart typeNode={typeNode.parameterType} />
                 )}
-                <SyntaxPunctuation char=")"/> 
+                <SyntaxPunctuation char=")" />
                 {" -> "}
                 <HighlightedTypePart typeNode={typeNode.returnType} />
             </>
@@ -279,14 +289,21 @@ function HighlightedTypePart({
             </>
         );
     } else if (typeNode.nodeType == "function_signature") {
-        const self = <HighlightedTypePart typeNode={typeNode.self}/>;
-        const parameters = typeNode.parameters.map(param => <>{param.name}: <HighlightedTypePart typeNode={param.type}/></>);
+        const self = <HighlightedTypePart typeNode={typeNode.self} />;
+        const parameters = typeNode.parameters.map(param => (
+            <>
+                {param.name}: <HighlightedTypePart typeNode={param.type} />
+            </>
+        ));
         return (
             <>
                 {typeNode.name}
-                <SyntaxPunctuation char="("/>
-                { elementJoin([self, ...parameters], <SyntaxPunctuation char=", " />)}
-                <SyntaxPunctuation char=")"/>
+                <SyntaxPunctuation char="(" />
+                {elementJoin(
+                    [self, ...parameters],
+                    <SyntaxPunctuation char=", " />
+                )}
+                <SyntaxPunctuation char=")" />
             </>
         );
     } else {
