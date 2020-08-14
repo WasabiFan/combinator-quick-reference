@@ -8,7 +8,8 @@ $genericParamColors: (
     "D": orchid, 
     "E": gold, 
     "F": orchid,
-    "P": gold, 
+    "P": gold,
+    "O": aquamarine,
 );
 
 @each $name, $color in $genericParamColors {

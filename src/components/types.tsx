@@ -147,7 +147,7 @@ function tryParseFunctionSignature(type: string): FunctionSignatureTypeNode | nu
             return [];
         }
 
-        const LEADING_PARAM_REGEX = /^\s*,\s*((?:[^,]|<.*>)+)/;
+        const LEADING_PARAM_REGEX = /^\s*,\s*((?:<.*>|[^,])+)/;
         const paramMatch = LEADING_PARAM_REGEX.exec(partial) ?? [];
         const [fullMatch, param] = [...paramMatch];
 
@@ -237,7 +237,7 @@ function HighlightedTypePart({
             </>
         );
     } else if (typeNode.nodeType == "bare_identifier") {
-        if (["T", "U", "D", "E", "F", "P"].includes(typeNode.name)) {
+        if (["T", "U", "D", "E", "F", "P", "O"].includes(typeNode.name)) {
             return (
                 <span
                     className={`code-generic-param code-generic-param-${typeNode.name}`}
