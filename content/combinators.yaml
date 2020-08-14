@@ -24,16 +24,10 @@
     candidates: "unwrap_or_default(self)"
   - have: Option<T>
     given:
-      - type: "F: Fn(T) -> U"
-        desc: &map_desc A function to compute the new value given the old one
-    want: Option<U>
-    candidates: "map(self, f: F)"
-  - have: Option<T>
-    given:
       - type: U
         desc: A default value
       - type: "F: Fn(T) -> U"
-        desc: *map_desc
+        desc: &map_desc A function to compute the new value given the old one
     want: U
     candidates: "map_or(self, default: U, f: F)"
   - have: Option<T>
@@ -44,30 +38,6 @@
         desc: *map_desc
     want: U
     candidates: "map_or_else(self, default: D, f: F)"
-  - have: Option<T>
-    given:
-      - type: E
-        desc: An error value
-    want: Result<T, E>
-    candidates: "ok_or(self, err: E)"
-  - have: Option<T>
-    given:
-      - type: "F: Fn() -> E"
-        desc: A function to compute an error value
-    want: Result<T, E>
-    candidates: "ok_or_else(self, err: F)"
-  - have: Option<T>
-    given:
-      - type: Option<U>
-        desc: Another Option
-    want: Option<U>
-    candidates: "and(self, optb: Option<U>)"
-  - have: Option<T>
-    given:
-      - type: "F: Fn(T) -> Option<U>"
-        desc: A function to compute a new Option given the current value
-    want: Option<U>
-    candidates: "and_then(self, f: F)"
   - have: Option<T>
     given:
       - type: Option<T>
@@ -92,6 +62,36 @@
         desc: Another Option
     want: Option<T>
     candidates: "xor(self, optb: Option<T>)"
+  - have: Option<T>
+    given:
+      - type: "F: Fn(T) -> U"
+        desc: *map_desc
+    want: Option<U>
+    candidates: "map(self, f: F)"
+  - have: Option<T>
+    given:
+      - type: Option<U>
+        desc: Another Option
+    want: Option<U>
+    candidates: "and(self, optb: Option<U>)"
+  - have: Option<T>
+    given:
+      - type: "F: Fn(T) -> Option<U>"
+        desc: A function to compute a new Option given the current value
+    want: Option<U>
+    candidates: "and_then(self, f: F)"
+  - have: Option<T>
+    given:
+      - type: E
+        desc: An error value
+    want: Result<T, E>
+    candidates: "ok_or(self, err: E)"
+  - have: Option<T>
+    given:
+      - type: "F: Fn() -> E"
+        desc: A function to compute an error value
+    want: Result<T, E>
+    candidates: "ok_or_else(self, err: F)"
   - have: Option<Result<T, E>>
     want: Result<Option<T>, E>
     candidates: "transpose(self)"
@@ -103,17 +103,32 @@
 - header: "Result"
   items:
   - have: Result<T, E>
-    want: Option<T>
-    candidates: "ok(self)"
-  - have: Result<T, E>
-    want: Option<E>
-    candidates: "err(self)"
+    want: T
+    panics: true
+    candidates:
+      - "unwrap(self)"
+      - "expect(self, msg: &str)"
   - have: Result<T, E>
     given:
-      - type: "F: Fn(T) -> U"
-        desc: *map_desc
-    want: Result<U, E>
-    candidates: "map(self, f: F)"
+      - type: T
+        desc: *default_desc
+    want: T
+    candidates: "unwrap_or(self, default: T)"
+  - have: Result<T, E>
+    given:
+      - type: "F: Fn(E) -> T"
+        desc: "A function to compute a value given the current error"
+    want: T
+    candidates: "unwrap_or_else(self, op: F)"
+  - have: Result<T, E>
+    want: T
+    candidates: "unwrap_or_default(self)"
+  - have: Result<T, E>
+    want: E
+    panics: true
+    candidates:
+      - "unwrap_err(self)"
+      - "expect_err(self, msg: &str)"
   - have: Result<T, E>
     given:
       - type: U
@@ -131,11 +146,17 @@
     want: U
     candidates: "map_or_else(self, default: D, f: F)"
   - have: Result<T, E>
+    want: Option<T>
+    candidates: "ok(self)"
+  - have: Result<T, E>
+    want: Option<E>
+    candidates: "err(self)"
+  - have: Result<T, E>
     given:
-      - type: "O: Fn(E) -> F"
-        desc: "A function to compute a new error value given the old error value"
-    want: Result<T, F>
-    candidates: "map_err(self, op: D)"
+      - type: "F: Fn(T) -> U"
+        desc: *map_desc
+    want: Result<U, E>
+    candidates: "map(self, f: F)"
   - have: Result<T, E>
     given:
       - type: "Result<U, E>"
@@ -150,6 +171,12 @@
     candidates: "and_then(self, op: F)"
   - have: Result<T, E>
     given:
+      - type: "O: Fn(E) -> F"
+        desc: "A function to compute a new error value given the old error value"
+    want: Result<T, F>
+    candidates: "map_err(self, op: D)"
+  - have: Result<T, E>
+    given:
       - type: "Result<T, F>"
         desc: "Another Result"
     want: Result<T, F>
@@ -160,31 +187,6 @@
         desc: "A function to compute another Result given the current error"
     want: Result<T, F>
     candidates: "or_else(self, op: O)"
-  - have: Result<T, E>
-    given:
-      - type: T
-        desc: *default_desc
-    want: T
-    candidates: "unwrap_or(self, default: T)"
-  - have: Result<T, E>
-    given:
-      - type: "F: Fn(E) -> T"
-        desc: "A function to compute a value given the current error"
-    want: T
-    candidates: "unwrap_or_else(self, op: F)"
-  - have: Result<T, E>
-    want: T
-    candidates:
-      - "unwrap(self)"
-      - "expect(self, msg: &str)"
-  - have: Result<T, E>
-    want: E
-    candidates:
-      - "unwrap_err(self)"
-      - "expect_err(self, msg: &str)"
-  - have: Result<T, E>
-    want: T
-    candidates: "unwrap_or_default(self)"
   - have: Result<Option<T>, E>
     want: Option<Result<T, E>>
     candidates: "transpose(self)"

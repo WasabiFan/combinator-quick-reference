@@ -32,24 +32,8 @@ interface AppData {
 
 const APP_DATA: AppData = preprocessData(COMBINATORS_DATA_IMPORT);
 
-function codeSimplicitySort(a: string, b: string): number {
-    if (a.length == b.length) {
-        return a.localeCompare(b);
-    } else {
-        return a.length - b.length;
-    }
-}
-
 function preprocessData(importData: Section[]): AppData {
-    return { sections: importData.map(s => {
-        const items = [...s.items].sort(
-            (a, b) =>
-                codeSimplicitySort(a.have, b.have) ||
-                codeSimplicitySort(a.want, b.want)
-            // Remaining fields are left in provided order
-        );
-        return { header: s.header, items }
-    })};
+    return { sections: importData };
 }
 
 interface TableRowProps {
