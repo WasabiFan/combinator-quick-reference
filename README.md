@@ -19,3 +19,20 @@ The type information and syntax on the page are not intended to stand on their o
 ## Contributing
 
 Contributions are welcome! The page is a straightforward Gatsby site, with listing data sourced from a YAML file and rendered in React.
+
+## Developing locally
+
+Quick-start:
+
+```
+npm install
+npm run develop
+```
+
+To create a standalone build of static files:
+
+```
+npm run build
+```
+
+See `package.json` for all available scripts. These match the default Gatsby template.
