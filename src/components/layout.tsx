@@ -14,10 +14,14 @@ const Layout = ({ children }: { children: any }) => {
             <div id="header-bg">
                 <div className="section">
                     <div className="container">
+                        <div className="row">
                         <h1>
                             <code>Result</code> and <code>Option</code>{" "}
                             combinator quick-reference
+                        {/* <a className="u-pull-right github-icon"></a> */}
+                        <img src="/static/GitHub-Mark-Light-64px.png" />
                         </h1>
+                        </div>
                     </div>
                 </div>
             </div>

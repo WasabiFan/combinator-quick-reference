@@ -35,3 +35,14 @@ code {
     background: #666;
     border: none;
 }
+
+.github-icon {
+    content: '';
+    background:url('../static/GitHub-Mark-Light-64px.png');
+    background-size:cover;
+    width:20px;
+    height:20px;
+    margin-top: auto;
+    margin-bottom: auto;
+    display: inline-block;
+}
